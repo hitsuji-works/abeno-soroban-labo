@@ -175,11 +175,12 @@ a { color: inherit; }
   -webkit-backdrop-filter: blur(4px);
 }
 .hero-card .tag {
-  font-family: var(--en-hand);
+  font-family: var(--hand);
   color: var(--accent);
-  font-size: 17px;
-  letter-spacing: .01em;
-  margin-bottom: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  margin-bottom: 4px;
 }
 .hero-card h1 {
   font-family: var(--serif);
@@ -236,20 +237,23 @@ a { color: inherit; }
     -webkit-backdrop-filter: none;
     order: -1;
   }
-  .hero-card .tag { font-size: 22px; }
-  .hero-card h1 { font-size: 48px; line-height: 1.18; margin-top: 8px; }
-  .hero-card .hero-sub { font-size: 15px; margin-top: 18px; max-width: 460px; line-height: 1.9; }
+  .hero-card .tag { font-size: 17px; }
+  .hero-card h1 { font-size: 62px; line-height: 1.16; margin-top: 12px; }
+  .hero-card .hero-sub { font-size: 18px; margin-top: 24px; max-width: 480px; line-height: 2; }
   .hero-cta {
-    padding: 0;
-    margin-top: 26px;
+    max-width: var(--max-w);
+    margin: 28px auto 0;
+    padding: 0 28px;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+    gap: 12px;
   }
   .hero-cta .btn.line {
     padding: 16px 28px;
     font-size: 16px;
   }
+  .hero-cta .btn.block { width: auto; }
   .hero-cta .sub-row {
     flex: 0 0 auto;
   }
@@ -307,16 +311,17 @@ section.s {
 
 .section-label {
   display: inline-block;
-  font-family: var(--en-hand);
-  font-size: 20px;
-  color: var(--ink-2);
-  border-bottom: 1.5px solid var(--line);
-  padding-bottom: 2px;
-  margin-bottom: 8px;
-  letter-spacing: .02em;
+  font-family: var(--hand);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  border-bottom: 1.5px solid var(--accent-soft);
+  padding-bottom: 3px;
+  margin-bottom: 10px;
+  letter-spacing: .04em;
 }
 @media (min-width: 900px) {
-  .section-label { font-size: 24px; }
+  .section-label { font-size: 15px; }
 }
 
 h2.section-title {
@@ -872,4 +877,474 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   outline: 2.5px solid var(--accent);
   outline-offset: 3px;
   border-radius: 4px;
+}
+
+/* ============================================================
+   Value-card descriptions (3つの力)
+   ============================================================ */
+.value-card .v-desc {
+  display: none;
+}
+@media (min-width: 900px) {
+  .value-card { text-align: left; padding: 20px 18px; }
+  .value-card .beads { justify-content: flex-start; }
+  .value-card h3 { font-size: 17px; margin: 8px 0 6px; }
+  .value-card .v-desc {
+    display: block;
+    font-family: var(--body);
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--ink-2);
+    margin: 0;
+  }
+}
+
+/* ============================================================
+   Price note (月4回=80分 など)
+   ============================================================ */
+.price-note {
+  margin-top: 12px;
+  font-family: var(--hand);
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+.price-note b { color: var(--accent); }
+@media (min-width: 900px) {
+  .price-note { font-size: 13px; margin-top: 16px; }
+}
+
+/* count-card minutes label */
+.count-card .min {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-3);
+  margin-top: 3px;
+}
+@media (min-width: 900px) {
+  .count-card .min { font-size: 10.5px; }
+}
+
+/* ============================================================
+   Sub-page header (お知らせ / 利用規約)
+   ============================================================ */
+.page-head {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 28px 18px 4px;
+}
+.page-head .section-label { margin-bottom: 8px; }
+.page-head h1 {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.3;
+  margin: 0 0 10px;
+}
+.page-head p.lead {
+  font-size: 14px;
+  color: var(--ink-2);
+  line-height: 1.9;
+  margin: 0;
+  max-width: 640px;
+}
+@media (min-width: 900px) {
+  .page-head { padding: 48px 28px 8px; }
+  .page-head h1 { font-size: 38px; }
+  .page-head p.lead { font-size: 15px; }
+}
+
+/* ============================================================
+   News list (お知らせ)
+   ============================================================ */
+.news-list {
+  border-top: 1.2px solid var(--ink-3);
+}
+.news-item {
+  border-bottom: 1.2px solid var(--ink-3);
+  padding: 18px 2px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+.news-item .meta {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.news-item time {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.news-item .cat {
+  font-family: var(--hand);
+  font-size: 11px;
+  color: var(--accent);
+  border: 1px solid var(--accent-soft);
+  background: var(--paper-2);
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+.news-item h3 {
+  font-family: var(--serif); font-weight: 700;
+  font-size: 16px; margin: 2px 0 0; line-height: 1.5;
+}
+.news-item p {
+  font-size: 13.5px; color: var(--ink-2);
+  line-height: 1.85; margin: 4px 0 0;
+}
+@media (min-width: 900px) {
+  .news-item { grid-template-columns: 180px 1fr; gap: 0 24px; padding: 22px 2px; }
+  .news-item .meta { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .news-item h3 { font-size: 18px; }
+  .news-item p { font-size: 14.5px; }
+}
+
+/* ============================================================
+   Legal / terms (利用規約)
+   ============================================================ */
+.legal {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 8px 18px 10px;
+}
+.legal .art { margin: 0 0 28px; }
+.legal h2 {
+  font-family: var(--serif); font-weight: 700;
+  font-size: 17px;
+  border-left: 4px solid var(--accent);
+  padding-left: 10px;
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+.legal p, .legal li {
+  font-size: 14px;
+  color: var(--ink-2);
+  line-height: 1.95;
+}
+.legal p { margin: 0 0 8px; }
+.legal ul, .legal ol { margin: 0 0 8px; padding-left: 1.3em; }
+.legal li { margin-bottom: 4px; }
+.legal .table {
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 6px 0 8px;
+}
+.legal .table .row {
+  display: grid; grid-template-columns: 100px 1fr;
+}
+.legal .table .row:not(:last-child) { border-bottom: 1px solid var(--ink-3); }
+.legal .table .k {
+  font-family: var(--hand); font-size: 13px;
+  background: var(--paper-2); padding: 10px 14px;
+  border-right: 1px solid var(--ink-3); color: var(--ink-2);
+}
+.legal .table .v { padding: 10px 14px; font-size: 13.5px; }
+.legal .updated {
+  font-family: var(--mono); font-size: 11.5px;
+  color: var(--ink-3); margin-top: 24px;
+}
+@media (min-width: 900px) {
+  .legal { padding: 16px 28px 20px; }
+  .legal h2 { font-size: 20px; }
+  .legal p, .legal li { font-size: 15px; }
+  .legal .table .row { grid-template-columns: 140px 1fr; }
+}
+
+/* ============================================================
+   Hero entrance animation
+   ============================================================ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-card .tag,
+.hero-card h1,
+.hero-card .hero-sub,
+.hero-cta {
+  opacity: 0;
+  animation: fadeUp .7s ease-out forwards;
+}
+.hero-card .tag      { animation-delay: .05s; }
+.hero-card h1        { animation-delay: .18s; }
+.hero-card .hero-sub { animation-delay: .34s; }
+.hero-cta            { animation-delay: .48s; }
+.hero-img-wrap {
+  opacity: 0;
+  animation: fadeUp .8s ease-out .12s forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-card .tag, .hero-card h1, .hero-card .hero-sub,
+  .hero-cta, .hero-img-wrap {
+    opacity: 1; animation: none;
+  }
+}
+
+/* ABOUT becomes single column (no instructor photo) */
+@media (min-width: 900px) {
+  .about-grid { grid-template-columns: 1fr; gap: 0; }
+  .about-lead { max-width: 820px; }
+}
+
+/* ============================================================
+   Course intro (自由時間制＋回数制の説明)
+   ============================================================ */
+.course-intro { margin-bottom: 22px; }
+.course-intro .ci-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.ci-item {
+  border-left: 3px solid var(--accent);
+  padding-left: 14px;
+}
+.ci-item .ci-key {
+  display: inline-block;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.ci-item p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-2);
+  line-height: 1.85;
+}
+.course-intro .tag-row { margin-top: 16px; }
+@media (min-width: 900px) {
+  .course-intro { margin-bottom: 30px; }
+  .course-intro .ci-row { grid-template-columns: 1fr 1fr; gap: 36px; }
+  .ci-item .ci-key { font-size: 18px; }
+  .ci-item p { font-size: 15px; }
+}
+
+/* ============================================================
+   Price panel (月謝・主役)
+   ============================================================ */
+.price-panel {
+  max-width: 760px;
+  margin: 0 auto;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--line);
+  padding: 20px 18px;
+}
+.price-title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 18px;
+  text-align: center;
+  margin: 2px 0 6px;
+}
+@media (min-width: 900px) {
+  .price-panel { padding: 32px 36px; box-shadow: 6px 6px 0 var(--line); }
+  .price-title { font-size: 24px; margin-bottom: 12px; }
+}
+
+/* お月謝以外の費用（教材費）説明 */
+.price-extra {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1.2px dashed var(--ink-3);
+}
+.price-extra h4 {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 14px;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+.price-extra p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.85;
+}
+.price-extra b { color: var(--accent); }
+.fee-list {
+  list-style: none;
+  margin: 10px 0;
+  padding: 0;
+  border: 1.2px solid var(--ink-3);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.fee-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: var(--ink-2);
+  background: var(--paper-2);
+}
+.fee-list li:not(:last-child) { border-bottom: 1px solid var(--ink-3); }
+.fee-list .fk small { color: var(--ink-3); font-size: 11px; }
+.fee-list .fv {
+  font-family: var(--serif);
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.fee-foot {
+  font-size: 12px !important;
+  color: var(--ink-3) !important;
+  margin-top: 8px;
+}
+@media (min-width: 900px) {
+  .price-extra h4 { font-size: 16px; }
+  .price-extra p { font-size: 14px; }
+  .fee-list li { font-size: 14px; padding: 11px 16px; }
+  .fee-foot { font-size: 13px !important; }
+}
+
+/* ============================================================
+   Price table (月謝)
+   ============================================================ */
+.price-table {
+  margin-top: 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--paper);
+}
+.price-table .prow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  align-items: center;
+}
+.price-table .prow:not(:last-child) {
+  border-bottom: 1.2px solid var(--ink-3);
+}
+.price-table .prow.head {
+  background: var(--ink);
+}
+.price-table .prow.head span {
+  font-family: var(--hand);
+  font-size: 12px;
+  color: var(--paper);
+  padding: 9px 12px;
+  text-align: center;
+}
+.price-table .prow .c {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 17px;
+  padding: 14px 12px;
+  text-align: center;
+  background: var(--paper-2);
+}
+.price-table .prow .t {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-2);
+  padding: 14px 8px;
+  text-align: center;
+}
+.price-table .prow .m {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--accent);
+  padding: 14px 12px;
+  text-align: center;
+}
+.price-table .prow .m small {
+  font-family: var(--hand);
+  font-size: 11px;
+  color: var(--ink-3);
+  font-weight: 400;
+}
+@media (min-width: 900px) {
+  .price-table .prow.head span { font-size: 14px; padding: 12px 16px; }
+  .price-table .prow .c { font-size: 20px; padding: 18px 16px; }
+  .price-table .prow .t { font-size: 14px; }
+  .price-table .prow .m { font-size: 26px; padding: 18px 16px; }
+  .price-table .prow .m small { font-size: 12px; }
+}
+
+/* ============================================================
+   Access — Google Map iframe
+   ============================================================ */
+iframe.access-map {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 3px 3px 0 var(--line);
+  display: block;
+}
+
+/* ============================================================
+   Calendar — closed (お休み) day
+   ============================================================ */
+.cal-day.off {
+  background: var(--paper);
+  color: var(--ink-3);
+  border-style: dashed;
+}
+.cal-day.off .time {
+  font-family: var(--hand);
+  font-size: 8.5px;
+  color: var(--ink-3);
+}
+.cal-note {
+  margin-top: 12px;
+  font-family: var(--hand);
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+@media (min-width: 900px) {
+  .cal-note { font-size: 13px; }
+}
+
+/* ============================================================
+   塾代助成バナー（大阪市）
+   ============================================================ */
+.josei {
+  margin-top: 26px;
+  background: linear-gradient(100deg, var(--accent), #e8721c);
+  color: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  padding: 22px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 6px 6px 0 var(--line);
+}
+.josei h4 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.josei p {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.94);
+  max-width: 560px;
+}
+.josei-badge {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  padding: 7px 15px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+@media (min-width: 900px) {
+  .josei { padding: 26px 30px; }
+  .josei h4 { font-size: 21px; }
 }
