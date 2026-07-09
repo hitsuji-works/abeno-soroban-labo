@@ -162,6 +162,7 @@ a { color: inherit; }
   display: block;
   aspect-ratio: 4 / 5;
   object-fit: cover;
+  object-position: 88% center;
 }
 .hero-card {
   position: absolute;
@@ -399,6 +400,7 @@ h2.section-title {
 }
 .gallery img {
   width: 100%;
+  height: auto;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 10px;
@@ -407,10 +409,13 @@ h2.section-title {
 }
 @media (min-width: 900px) {
   .gallery {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 14px;
   }
-  .gallery img { box-shadow: 3px 3px 0 var(--line); }
+  .gallery img {
+    aspect-ratio: 4 / 3;
+    box-shadow: 3px 3px 0 var(--line);
+  }
 }
 
 /* COURSES (通い方) */
