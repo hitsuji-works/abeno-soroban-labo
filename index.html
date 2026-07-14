@@ -57,6 +57,39 @@
     </div>
   </section>
 
+  <!-- NEWS -->
+  <section class="s" id="news" style="padding-bottom:0;">
+    <div style="max-width:900px; margin:0 auto; padding: 0 16px;">
+      <span class="section-label">お知らせ</span>
+      <h2 class="section-title">最新の情報</h2>
+      
+      <div class="news-list" style="margin-top: 30px;">
+        <article class="news-item">
+          <div class="meta">
+            <time datetime="2026-07-14">2026.07.14</time>
+            <span class="cat">お知らせ</span>
+          </div>
+          <div>
+            <h3>阿倍野校の公式HPを公開しました</h3>
+          </div>
+        </article>
+  
+        <article class="news-item">
+          <div class="meta">
+            <time datetime="2026-07-01">2026.07.01</time>
+            <span class="cat">お知らせ</span>
+          </div>
+          <div>
+            <h3>7月17日(金)は検定試験のため18時までの授業となります</h3>
+          </div>
+        </article>
+        
+        <div style="margin-top: 16px; text-align: right;">
+          <a href="news.html" style="font-size:13px; color:var(--accent); font-weight:600; text-decoration:none;">すべてのお知らせを見る →</a>
+        </div>
+      </div>
+    </div>
+  </section>
   <!-- Hero CTAs (mobile inline) -->
   <div class="hero-cta">
     <a class="btn line lg block" href="https://lin.ee/6mEq6KBG" target="_blank" rel="noopener">LINEで無料体験を予約</a>
@@ -186,27 +219,8 @@
     <h2 class="section-title">授業日のカレンダー</h2>
 
     <div class="schedule">
-      <div class="schedule-intro">
-        <h3>毎週 <em>火・水・金</em>、<br>15:00〜19:00 が授業時間。</h3>
-        <p>
-          この時間内であれば、いつお越しいただいても大丈夫です。到着から60分（月4回コースは80分）が授業時間となります。今月の授業日とお休みは、下のカレンダーでご確認いただけます。最新情報は公式LINEでもお届けします。
-        </p>
-        <div class="schedule-legend">
-          <div class="row"><span class="dot on" aria-hidden="true"></span><span>授業日（火・水・金）</span></div>
-          <div class="row"><span class="dot" aria-hidden="true"></span><span>お休み</span></div>
-        </div>
-      </div>
-
-      <div class="cal" aria-label="今月の授業日">
-        <div class="cal-head">
-          <div class="month" id="calMonth">—</div>
-          <div class="nav-arrows" aria-hidden="true">‹ ›</div>
-        </div>
-        <div class="cal-dow" aria-hidden="true">
-          <span class="sun">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="sat">土</span>
-        </div>
-        <div class="cal-days" id="calDays"></div>
-        <p class="cal-note" id="calNote"></p>
+      <div class="cal-slider" id="calContainer">
+        <!-- JS generates calendars here -->
       </div>
     </div>
   </section>
@@ -343,51 +357,128 @@
        通常は火・水・金が授業日。closed に入れた日は「休」と表示されます。
        ============================================================ -->
   <script>
-    var CAL_CONFIG = {
-      year: 2026,
-      month: 7,
-      closed: [],
-      note: "祝日・休講などお休みの日は「休」と表示します。変更は公式LINEでもお知らせします。"
-    };
+    var CAL_CONFIG = [
+      {
+        year: 2026,
+        month: 7,
+        closed: [1],
+        extraOn: [],
+        labels: {
+          1: "研修",
+          17: "検定(-18時)",
+          31: "8月1回目"
+        },
+        note: "7月1日は研修会の為お休みの予定でしたが、後日振替などご確認ください。<br>7月17日は検定試験のため18時までの授業です。<br>7月31日は8月の1回目の授業となります。"
+      },
+      {
+        year: 2026,
+        month: 8,
+        closed: [11, 12, 14],
+        extraOn: [1],
+        labels: {
+          1: "13–16時",
+          11: "山の日"
+        },
+        note: "7月31日は8月の1回目の授業となります。<br>8月1日は13時〜16時の授業となります。"
+      }
+    ];
 
-    (function (cfg) {
-      var monthEl = document.getElementById("calMonth");
-      var daysEl = document.getElementById("calDays");
-      var noteEl = document.getElementById("calNote");
-      if (!monthEl || !daysEl) return;
+    (function (configs) {
+      var container = document.getElementById("calContainer");
+      if (!container) return;
 
-      var year = cfg.year, month = cfg.month - 1; // 0-11
       var monthNames = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
-      monthEl.textContent = year + "年 " + monthNames[month];
-      if (noteEl) noteEl.textContent = cfg.note || "";
-
-      var firstDay = new Date(year, month, 1).getDay(); // 0=日
-      var daysInMonth = new Date(year, month + 1, 0).getDate();
       var lessonDays = [2, 3, 5]; // 火=2, 水=3, 金=5
-      var frag = document.createDocumentFragment();
 
-      function cell(cls, html) {
-        var d = document.createElement("div");
-        d.className = "cal-day" + (cls ? " " + cls : "");
-        if (html) d.innerHTML = html;
-        if (cls.indexOf("empty") > -1) d.setAttribute("aria-hidden", "true");
-        return d;
-      }
-
-      for (var i = 0; i < firstDay; i++) frag.appendChild(cell("empty", ""));
-      for (var day = 1; day <= daysInMonth; day++) {
-        var dow = new Date(year, month, day).getDay();
-        var isLesson = lessonDays.indexOf(dow) > -1;
-        var isClosed = cfg.closed.indexOf(day) > -1;
-        if (isLesson && !isClosed) {
-          frag.appendChild(cell("on", day + '<span class="time">15–19</span>'));
-        } else if (isClosed) {
-          frag.appendChild(cell("off", day + '<span class="time">休</span>'));
-        } else {
-          frag.appendChild(cell("", String(day)));
+      configs.forEach(function(cfg, index) {
+        var year = cfg.year, month = cfg.month - 1;
+        var firstDay = new Date(year, month, 1).getDay();
+        var daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        var calDiv = document.createElement("div");
+        calDiv.className = "cal";
+        calDiv.setAttribute("aria-label", cfg.month + "月の授業日");
+        
+        var head = document.createElement("div");
+        head.className = "cal-head";
+        var arrowHtml = '<div class="cal-arrows">';
+        arrowHtml += '<button class="nav-btn prev" aria-label="前月">‹</button>';
+        arrowHtml += '<button class="nav-btn next" aria-label="次月">›</button>';
+        arrowHtml += '</div>';
+        
+        head.innerHTML = '<div class="month">' + year + '年 ' + monthNames[month] + '</div>' + arrowHtml;
+        calDiv.appendChild(head);
+        
+        var dow = document.createElement("div");
+        dow.className = "cal-dow";
+        dow.setAttribute("aria-hidden", "true");
+        dow.innerHTML = '<span class="sun">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="sat">土</span>';
+        calDiv.appendChild(dow);
+        
+        var daysEl = document.createElement("div");
+        daysEl.className = "cal-days";
+        
+        function cell(cls, html) {
+          var d = document.createElement("div");
+          d.className = "cal-day" + (cls ? " " + cls : "");
+          if (html) d.innerHTML = html;
+          if (cls.indexOf("empty") > -1) d.setAttribute("aria-hidden", "true");
+          return d;
         }
-      }
-      daysEl.appendChild(frag);
+
+        var frag = document.createDocumentFragment();
+        for (var i = 0; i < firstDay; i++) frag.appendChild(cell("empty", ""));
+        for (var day = 1; day <= daysInMonth; day++) {
+          var dowIndex = new Date(year, month, day).getDay();
+          var isLesson = lessonDays.indexOf(dowIndex) > -1 || (cfg.extraOn && cfg.extraOn.indexOf(day) > -1);
+          var isClosed = cfg.closed.indexOf(day) > -1;
+          var label = (cfg.labels && cfg.labels[day]) ? cfg.labels[day] : "";
+          
+          if (isLesson && !isClosed) {
+            frag.appendChild(cell("on", '<span class="date-num">' + day + '</span><span class="mark">◯</span>' + (label ? '<span class="time">' + label + '</span>' : '')));
+          } else if (isClosed) {
+            frag.appendChild(cell("off", '<span class="date-num">' + day + '</span><span class="mark">×</span>' + (label ? '<span class="time">' + label + '</span>' : '')));
+          } else {
+            frag.appendChild(cell("", '<span class="date-num">' + day + '</span>' + (label ? '<span class="time" style="color:#666;">' + label + '</span>' : '')));
+          }
+        }
+        
+        // Pad with empty cells so every calendar is exactly 6 rows (42 cells)
+        var totalCells = firstDay + daysInMonth;
+        var remainingCells = 42 - totalCells;
+        for (var j = 0; j < remainingCells; j++) {
+          frag.appendChild(cell("empty", ""));
+        }
+        
+        daysEl.appendChild(frag);
+        calDiv.appendChild(daysEl);
+        
+        if (cfg.note) {
+          var noteP = document.createElement("p");
+          noteP.className = "cal-note";
+          noteP.innerHTML = cfg.note;
+          calDiv.appendChild(noteP);
+        }
+        
+        container.appendChild(calDiv);
+
+        // Add event listeners for arrows
+        setTimeout(function() {
+          var prevBtn = calDiv.querySelector('.prev');
+          var nextBtn = calDiv.querySelector('.next');
+          
+          if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+              container.scrollBy({ left: -container.clientWidth * 0.88, behavior: 'smooth' });
+            });
+          }
+          if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+              container.scrollBy({ left: container.clientWidth * 0.88, behavior: 'smooth' });
+            });
+          }
+        }, 0);
+      });
     })(CAL_CONFIG);
   </script>
 

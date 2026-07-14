@@ -556,6 +556,8 @@ h2.section-title {
 }
 
 .cal {
+  display: flex;
+  flex-direction: column;
   border: 1.5px solid var(--line);
   border-radius: 12px;
   padding: 16px;
@@ -588,48 +590,120 @@ h2.section-title {
 .cal-dow span.sun { color: #b04; }
 .cal-dow span.sat { color: #247; }
 .cal-days {
-  display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+  display: grid; 
+  grid-template-columns: repeat(7, minmax(0, 1fr)); 
+  gap: 4px;
+  grid-auto-rows: 1fr; /* Force all rows (including empty ones) to have the same height */
 }
 .cal-day {
-  aspect-ratio: 1 / 1;
+  min-height: 54px;
+  height: 100%;
+  width: 100%;
   border: 1.2px solid var(--ink-3);
   border-radius: 6px;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
+  align-items: center; justify-content: space-between;
+  padding: 4px;
   background: var(--paper);
   color: var(--ink-3);
   font-family: var(--mono); font-size: 12px;
-  position: relative;
+}
+.cal-day .date-num {
+  width: 100%;
+  text-align: left;
+  font-size: 10px;
+  line-height: 1;
+}
+.cal-day .mark {
+  flex-grow: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  line-height: 1;
 }
 .cal-day.empty {
   border: 0;
   background: transparent;
 }
 .cal-day.on {
-  background: var(--accent-soft);
+  background: #fff0f5; /* Light pink background for class days */
   color: var(--ink);
-  border-color: var(--line);
-  font-weight: 600;
+  border-color: #ffc2d1;
+}
+.cal-day.on .mark {
+  color: var(--accent);
+}
+.cal-day.off {
+  background: #f4f4f4; /* Gray background for closed days */
+  color: var(--ink-3);
+  border-color: #e0e0e0;
+}
+.cal-day.off .mark {
+  color: #aaa;
 }
 .cal-day .time {
+  width: 100%;
+  text-align: center;
   font-family: var(--hand);
-  font-size: 8.5px;
-  color: var(--accent);
-  margin-top: 2px;
-  line-height: 1;
+  font-size: 9px;
+  color: var(--ink-2);
+  line-height: 1.2;
+}
+.cal-note {
+  margin-top: auto;
+  padding-top: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.cal-arrows {
+  display: flex; gap: 8px;
+}
+.nav-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  color: var(--ink-2);
+  cursor: pointer;
+  padding: 0;
+  transition: 0.2s ease;
+}
+.nav-btn:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.cal-slider {
+  display: flex;
+  align-items: stretch; /* Stretch to tallest */
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  gap: 16px;
+  padding: 4px 4px 20px 4px;
+  /* Hide scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.cal-slider::-webkit-scrollbar {
+  display: none;
+}
+.cal-slider .cal {
+  flex: 0 0 88%; /* Peek next month */
+  scroll-snap-align: center;
+  max-width: 340px;
 }
 @media (min-width: 900px) {
-  .schedule {
-    grid-template-columns: 1fr 1.2fr;
-    gap: 50px;
-    align-items: start;
-  }
-  .schedule-intro h3 { font-size: 28px; }
-  .schedule-intro p { font-size: 15px; }
   .cal { padding: 22px; box-shadow: 5px 5px 0 var(--line); }
+  .cal-slider { justify-content: center; } /* Center the calendar on desktop since intro is gone */
+  .cal-slider .cal { flex: 0 0 auto; scroll-snap-align: start; width: 100%; max-width: 520px; }
   .cal-head .month { font-size: 20px; }
-  .cal-day { font-size: 14px; }
-  .cal-day .time { font-size: 9.5px; margin-top: 4px; }
+  .cal-day { min-height: 70px; padding: 6px; }
+  .cal-day .date-num { font-size: 12px; }
+  .cal-day .mark { font-size: 32px; }
+  .cal-day .time { font-size: 10.5px; }
 }
 
 /* Mid CTA banner */
