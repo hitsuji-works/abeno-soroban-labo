@@ -606,7 +606,7 @@ h2.section-title {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 4px;
-  /* 各行は内容に応じた高さ（長いラベルの週だけ高くなり、他の週は影響を受けない） */
+  grid-auto-rows: 1fr; /* 全ての週を同じ高さに揃える（ラベルは短めにして縦長を防ぐ） */
 }
 .cal-day {
   min-height: 54px;
