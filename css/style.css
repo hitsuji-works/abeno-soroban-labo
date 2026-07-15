@@ -565,12 +565,26 @@ h2.section-title {
   box-shadow: 3px 3px 0 var(--line);
 }
 .cal-head {
-  display: flex; justify-content: space-between; align-items: baseline;
+  display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 10px;
 }
 .cal-head .month {
   font-family: var(--serif); font-weight: 700; font-size: 18px;
 }
+.cal-arrows { display: flex; gap: 8px; flex-shrink: 0; }
+.nav-btn {
+  background: transparent;
+  border: 1.3px solid var(--line);
+  border-radius: 8px;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; line-height: 1;
+  color: var(--ink-2);
+  cursor: pointer; padding: 0;
+  transition: 0.15s ease;
+}
+.nav-btn:hover { background: var(--paper); color: var(--ink); border-color: var(--ink-3); }
+.nav-btn:active { transform: translateY(1px); }
 .cal-head .month .en {
   font-family: var(--en-hand);
   color: var(--accent);
@@ -583,17 +597,17 @@ h2.section-title {
 .cal-dow {
   display: grid; grid-template-columns: repeat(7, 1fr);
   gap: 4px;
-  font-family: var(--mono); font-size: 11px;
+  font-family: var(--mono); font-size: 13px;
   text-align: center; color: var(--ink-2);
   margin-bottom: 6px;
 }
 .cal-dow span.sun { color: #b04; }
 .cal-dow span.sat { color: #247; }
 .cal-days {
-  display: grid; 
-  grid-template-columns: repeat(7, minmax(0, 1fr)); 
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 4px;
-  grid-auto-rows: 1fr; /* Force all rows (including empty ones) to have the same height */
+  /* 各行は内容に応じた高さ（長いラベルの週だけ高くなり、他の週は影響を受けない） */
 }
 .cal-day {
   min-height: 54px;
@@ -606,12 +620,12 @@ h2.section-title {
   padding: 4px;
   background: var(--paper);
   color: var(--ink-3);
-  font-family: var(--mono); font-size: 12px;
+  font-family: var(--mono); font-size: 13px;
 }
 .cal-day .date-num {
   width: 100%;
   text-align: left;
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1;
 }
 .cal-day .mark {
@@ -619,6 +633,14 @@ h2.section-title {
   display: flex; align-items: center; justify-content: center;
   font-size: 24px;
   line-height: 1;
+}
+.cal-day .mark.small {
+  font-size: 15px;
+}
+/* 前月からの特例授業（例：7/31を8月の1回目として表示） */
+.cal-day.pre .date-num {
+  color: var(--accent);
+  font-weight: 700;
 }
 .cal-day.empty {
   border: 0;
@@ -644,40 +666,21 @@ h2.section-title {
   width: 100%;
   text-align: center;
   font-family: var(--hand);
-  font-size: 9px;
+  font-size: 11px;
   color: var(--ink-2);
-  line-height: 1.2;
+  line-height: 1.25;
 }
 .cal-note {
-  margin-top: auto;
+  margin-top: 14px;
   padding-top: 16px;
-  font-size: 13px;
-  line-height: 1.6;
+  border-top: 1px dashed var(--line);
+  font-size: 15px;
+  line-height: 1.8;
   color: var(--ink-2);
 }
-.cal-arrows {
-  display: flex; gap: 8px;
-}
-.nav-btn {
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-  color: var(--ink-2);
-  cursor: pointer;
-  padding: 0;
-  transition: 0.2s ease;
-}
-.nav-btn:hover {
-  background: var(--paper);
-  color: var(--ink);
-}
-
 .cal-slider {
   display: flex;
-  align-items: stretch; /* Stretch to tallest */
+  align-items: flex-start; /* Each card keeps its natural height */
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
@@ -696,14 +699,18 @@ h2.section-title {
   max-width: 340px;
 }
 @media (min-width: 900px) {
-  .cal { padding: 22px; box-shadow: 5px 5px 0 var(--line); }
-  .cal-slider { justify-content: center; } /* Center the calendar on desktop since intro is gone */
-  .cal-slider .cal { flex: 0 0 auto; scroll-snap-align: start; width: 100%; max-width: 520px; }
-  .cal-head .month { font-size: 20px; }
-  .cal-day { min-height: 70px; padding: 6px; }
-  .cal-day .date-num { font-size: 12px; }
-  .cal-day .mark { font-size: 32px; }
-  .cal-day .time { font-size: 10.5px; }
+  .cal { padding: 26px; box-shadow: 5px 5px 0 var(--line); }
+  /* 1ヶ月を大きく表示。隣月は右端/左端がちらっと見えるカルーセル */
+  .cal-slider { max-width: 860px; margin: 0 auto; }
+  .cal-slider .cal { flex: 0 0 calc(100% - 56px); max-width: none; scroll-snap-align: center; }
+  .cal-head .month { font-size: 24px; }
+  .cal-dow { font-size: 15px; }
+  .cal-day { min-height: 84px; padding: 8px; }
+  .cal-day .date-num { font-size: 16px; }
+  .cal-day .mark { font-size: 34px; }
+  .cal-day .mark.small { font-size: 22px; }
+  .cal-day .time { font-size: 14px; }
+  .cal-note { font-size: 16px; }
 }
 
 /* Mid CTA banner */
@@ -1370,18 +1377,20 @@ iframe.access-map {
 }
 .cal-day.off .time {
   font-family: var(--hand);
-  font-size: 8.5px;
+  font-size: 11px;
   color: var(--ink-3);
 }
 .cal-note {
-  margin-top: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
   font-family: var(--hand);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--ink-2);
-  line-height: 1.7;
+  line-height: 1.85;
 }
 @media (min-width: 900px) {
-  .cal-note { font-size: 13px; }
+  .cal-note { font-size: 16px; }
 }
 
 /* ============================================================

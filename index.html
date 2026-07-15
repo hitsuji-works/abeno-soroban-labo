@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;500;700&family=Klee+One:wght@400;600&family=Zen+Kurenaido&family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=20260715e" />
 </head>
 <body>
 
@@ -363,23 +363,26 @@
         month: 7,
         closed: [1],
         extraOn: [],
+        smallMark: [17],
         labels: {
           1: "研修",
-          17: "検定(-18時)",
+          17: "※検定のため授業は18時まで",
           31: "8月1回目"
         },
-        note: "7月1日は研修会の為お休みの予定でしたが、後日振替などご確認ください。<br>7月17日は検定試験のため18時までの授業です。<br>7月31日は8月の1回目の授業となります。"
+        note: "7月17日は検定試験のため18時までの授業です。<br>7月31日は8月の1回目の授業となります。"
       },
       {
         year: 2026,
         month: 8,
         closed: [11, 12, 14],
         extraOn: [1],
+        // 今回のみの特例：7/31（金）を8月の1回目としてカレンダー先頭に表示
+        preLesson: { dow: 5, day: "7/31", label: "8月1回目" },
         labels: {
           1: "13–16時",
           11: "山の日"
         },
-        note: "7月31日は8月の1回目の授業となります。<br>8月1日は13時〜16時の授業となります。"
+        note: "7月31日は8月の1回目の授業となります。<br>8月1日は土曜日ですが授業を行います。（13時〜16時）"
       }
     ];
 
@@ -389,6 +392,14 @@
 
       var monthNames = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
       var lessonDays = [2, 3, 5]; // 火=2, 水=3, 金=5
+
+      // 対象カレンダーを中央に寄せる（端はブラウザが自動でクランプ）
+      function scrollToCard(target) {
+        var cRect = container.getBoundingClientRect();
+        var tRect = target.getBoundingClientRect();
+        var delta = (tRect.left - cRect.left) - (container.clientWidth - tRect.width) / 2;
+        container.scrollTo({ left: container.scrollLeft + delta, behavior: 'smooth' });
+      }
 
       configs.forEach(function(cfg, index) {
         var year = cfg.year, month = cfg.month - 1;
@@ -402,10 +413,9 @@
         var head = document.createElement("div");
         head.className = "cal-head";
         var arrowHtml = '<div class="cal-arrows">';
-        arrowHtml += '<button class="nav-btn prev" aria-label="前月">‹</button>';
-        arrowHtml += '<button class="nav-btn next" aria-label="次月">›</button>';
+        if (index > 0) arrowHtml += '<button class="nav-btn prev" aria-label="前の月を見る">‹</button>';
+        if (index < configs.length - 1) arrowHtml += '<button class="nav-btn next" aria-label="次の月を見る">›</button>';
         arrowHtml += '</div>';
-        
         head.innerHTML = '<div class="month">' + year + '年 ' + monthNames[month] + '</div>' + arrowHtml;
         calDiv.appendChild(head);
         
@@ -427,15 +437,22 @@
         }
 
         var frag = document.createDocumentFragment();
-        for (var i = 0; i < firstDay; i++) frag.appendChild(cell("empty", ""));
+        for (var i = 0; i < firstDay; i++) {
+          if (cfg.preLesson && cfg.preLesson.dow === i) {
+            frag.appendChild(cell("on pre", '<span class="date-num">' + cfg.preLesson.day + '</span><span class="mark">◯</span>' + (cfg.preLesson.label ? '<span class="time">' + cfg.preLesson.label + '</span>' : '')));
+          } else {
+            frag.appendChild(cell("empty", ""));
+          }
+        }
         for (var day = 1; day <= daysInMonth; day++) {
           var dowIndex = new Date(year, month, day).getDay();
           var isLesson = lessonDays.indexOf(dowIndex) > -1 || (cfg.extraOn && cfg.extraOn.indexOf(day) > -1);
           var isClosed = cfg.closed.indexOf(day) > -1;
           var label = (cfg.labels && cfg.labels[day]) ? cfg.labels[day] : "";
-          
+
           if (isLesson && !isClosed) {
-            frag.appendChild(cell("on", '<span class="date-num">' + day + '</span><span class="mark">◯</span>' + (label ? '<span class="time">' + label + '</span>' : '')));
+            var markCls = (cfg.smallMark && cfg.smallMark.indexOf(day) > -1) ? "mark small" : "mark";
+            frag.appendChild(cell("on", '<span class="date-num">' + day + '</span><span class="' + markCls + '">◯</span>' + (label ? '<span class="time">' + label + '</span>' : '')));
           } else if (isClosed) {
             frag.appendChild(cell("off", '<span class="date-num">' + day + '</span><span class="mark">×</span>' + (label ? '<span class="time">' + label + '</span>' : '')));
           } else {
@@ -443,9 +460,10 @@
           }
         }
         
-        // Pad with empty cells so every calendar is exactly 6 rows (42 cells)
+        // Pad only the final week so the grid ends cleanly (no extra empty row)
         var totalCells = firstDay + daysInMonth;
-        var remainingCells = 42 - totalCells;
+        var remainder = totalCells % 7;
+        var remainingCells = remainder === 0 ? 0 : 7 - remainder;
         for (var j = 0; j < remainingCells; j++) {
           frag.appendChild(cell("empty", ""));
         }
@@ -462,22 +480,19 @@
         
         container.appendChild(calDiv);
 
-        // Add event listeners for arrows
-        setTimeout(function() {
-          var prevBtn = calDiv.querySelector('.prev');
-          var nextBtn = calDiv.querySelector('.next');
-          
-          if (prevBtn) {
-            prevBtn.addEventListener('click', function() {
-              container.scrollBy({ left: -container.clientWidth * 0.88, behavior: 'smooth' });
-            });
-          }
-          if (nextBtn) {
-            nextBtn.addEventListener('click', function() {
-              container.scrollBy({ left: container.clientWidth * 0.88, behavior: 'smooth' });
-            });
-          }
-        }, 0);
+        // 矢印で前後の月へスライド（隣のカレンダーを中央に寄せる）
+        var prevBtn = head.querySelector('.prev');
+        var nextBtn = head.querySelector('.next');
+        if (prevBtn) {
+          prevBtn.addEventListener('click', function() {
+            if (calDiv.previousElementSibling) scrollToCard(calDiv.previousElementSibling);
+          });
+        }
+        if (nextBtn) {
+          nextBtn.addEventListener('click', function() {
+            if (calDiv.nextElementSibling) scrollToCard(calDiv.nextElementSibling);
+          });
+        }
       });
     })(CAL_CONFIG);
   </script>
