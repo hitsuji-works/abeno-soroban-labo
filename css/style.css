@@ -69,9 +69,8 @@ a { color: inherit; }
   font-size: 16px;
 }
 .brand .bead {
-  width: 13px; height: 13px; border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 1.5px var(--line);
+  width: 28px; height: 22px;
+  background: url(../images/abeno_logo.png) center / contain no-repeat;
 }
 .nav-links {
   display: none; /* hidden on mobile, shown on desktop */
@@ -93,7 +92,7 @@ a { color: inherit; }
 @media (min-width: 900px) {
   .nav-inner { padding: 16px 28px; }
   .brand { font-size: 18px; }
-  .brand .bead { width: 15px; height: 15px; }
+  .brand .bead { width: 32px; height: 25px; }
   .nav-links { display: flex; }
   .nav-cta { margin-left: 14px; }
 }
@@ -893,9 +892,8 @@ footer.site .brand-block {
   display: flex; align-items: center; gap: 9px;
 }
 footer.site .brand-block .bead {
-  width: 13px; height: 13px; border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 1.5px var(--paper);
+  width: 28px; height: 22px;
+  background: url(../images/abeno_logo.png) center / contain no-repeat;
 }
 footer.site .info {
   font-family: var(--hand);
