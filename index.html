@@ -391,7 +391,9 @@
           17: "※18時まで",
           31: "8月1回目"
         },
-        note: "7月17日は検定試験のため18時までの授業です。<br>7月31日は8月の1回目の授業となります。"
+        note: "7月17日は検定試験のため18時までの授業です。<br>7月31日は8月の1回目の授業となります。",
+        // 8月1日以降は自動で非表示になる
+        hideAfter: "2026-08-01"
       },
       {
         year: 2026,
@@ -404,13 +406,35 @@
           1: "12–15時",
           11: "山の日"
         },
-        note: "7月31日は8月の1回目の授業となります。<br>8月1日は土曜日ですが授業を行います。（12時〜15時）"
+        note: "7月31日は8月の1回目の授業となります。<br>8月1日は土曜日ですが授業を行います。（12時〜15時）<br>8月11日（火）〜14日（金）はお盆休みです。"
+      },
+      {
+        year: 2026,
+        month: 9,
+        closed: [22, 23],
+        extraOn: [],
+        labels: {
+          21: "敬老の日",
+          22: "国民の休日",
+          23: "秋分の日",
+          29: "5週目も授業",
+          30: "5週目も授業"
+        },
+        note: "9月22日（火）・23日（水）は祝日のためお休みです。<br>9月29日（火）・30日（水）は5週目ですが授業を行います。"
       }
     ];
 
     (function (configs) {
       var container = document.getElementById("calContainer");
       if (!container) return;
+
+      // hideAfter（YYYY-MM-DD）を過ぎた月は表示しない
+      var today = new Date();
+      configs = configs.filter(function (cfg) {
+        if (!cfg.hideAfter) return true;
+        var parts = cfg.hideAfter.split("-");
+        return today < new Date(+parts[0], +parts[1] - 1, +parts[2]);
+      });
 
       var monthNames = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
       var lessonDays = [2, 3, 5]; // 火=2, 水=3, 金=5
