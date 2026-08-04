@@ -1,0 +1,7 @@
+# このファイルは osaka-soroban.com のドメインルート（ロリポップの公開フォルダ osaka-soroban/ の直下）に置くこと。
+# abeno/ や tsurumi/ の中に置いても検索エンジンは読まない。
+User-agent: *
+Allow: /
+
+Sitemap: https://osaka-soroban.com/abeno/sitemap.xml
+Sitemap: https://osaka-soroban.com/tsurumi/sitemap.xml
