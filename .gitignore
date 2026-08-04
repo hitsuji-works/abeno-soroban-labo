@@ -1,1 +1,5 @@
 .DS_Store
+
+# 本番用の index.php はDBパスワードとDiscord Webhook URLを含むため
+# 公開リポジトリには絶対にコミットしない（伏せ字版は index.php.backup-* を参照）
+deploy-root/index.php

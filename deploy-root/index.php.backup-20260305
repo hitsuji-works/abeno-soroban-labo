@@ -1,0 +1,154 @@
+<?php
+// エラーは画面に一切出さない
+ini_set('display_errors', '0');
+
+// URLパラメータ取得
+$flyerParam = isset($_GET['flyer']) ? (string)$_GET['flyer'] : '';
+$destParam  = isset($_GET['dest']) ? (string)$_GET['dest'] : '';
+
+// リダイレクト先判定
+// flyer=〇〇 で教室（鶴見 / 阿倍野）を判定し、dest=ig/line/wix で行き先の種類を判定する
+// さらに後方互換として dest=ig_abeno/line_abeno/wix_abeno も対応
+
+// flyer の文字列から阿倍野かどうかを推定（abeno / 阿倍野 を含むか）
+$isAbeno = false;
+if ($flyerParam !== '') {
+    $lowerFlyer = mb_strtolower($flyerParam, 'UTF-8');
+    if (strpos($lowerFlyer, 'abeno') !== false || mb_strpos($flyerParam, '阿倍野') !== false) {
+        $isAbeno = true;
+    }
+}
+
+switch ($destParam) {
+    // ▼ Instagram
+    case 'ig':
+        $redirectUrl = $isAbeno
+            ? 'https://www.instagram.com/abenosoroban/?hl=ja'
+            : 'https://www.instagram.com/tsurumisoroban/?hl=ja';
+        break;
+    case 'ig_abeno': // 後方互換：明示的に阿倍野指定
+        $redirectUrl = 'https://www.instagram.com/abenosoroban/?hl=ja';
+        break;
+
+    // ▼ LINE
+    case 'line':
+        $redirectUrl = $isAbeno
+            ? 'https://lin.ee/5Z3VGwon'
+            : 'https://lin.ee/umcvvkz';
+        break;
+    case 'line_abeno': // 後方互換
+        $redirectUrl = 'https://lin.ee/5Z3VGwon';
+        break;
+
+    // ▼ ホームページ（Wix）
+    case 'wix':
+        $redirectUrl = $isAbeno
+            ? 'https://uedasyuzan.wixsite.com/uedasyuzanngakkou/%E3%81%82%E3%81%B9%E3%81%AE%E3%81%9D%E3%82%8D%E3%81%B0%E3%82%93labo'
+            : 'https://uedasyuzan.wixsite.com/uedasyuzanngakkou/blank-12';
+        break;
+    case 'wix_abeno': // 後方互換
+        $redirectUrl = 'https://uedasyuzan.wixsite.com/uedasyuzanngakkou/%E3%81%82%E3%81%B9%E3%81%AE%E3%81%9D%E3%82%8D%E3%81%B0%E3%82%93labo';
+        break;
+
+    // ▼ 指定がない場合は鶴見のHPへ（安全対策）
+    default:
+        $redirectUrl = 'https://uedasyuzan.wixsite.com/uedasyuzanngakkou/blank-12';
+        break;
+}
+
+// 初回 / リピート判定（Cookie利用）
+$cookieName    = 'sorobanqr_visited';
+$isFirstVisit  = 0;
+
+if (!isset($_COOKIE[$cookieName])) {
+    $isFirstVisit = 1;
+    // 1年間有効
+    setcookie($cookieName, '1', time() + 365 * 24 * 60 * 60, '/');
+}
+
+// IPアドレス取得（プロキシ考慮）
+$ipAddress = '';
+if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $parts = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+    $ipAddress = trim($parts[0]);
+} elseif (!empty($_SERVER['REMOTE_ADDR'])) {
+    $ipAddress = $_SERVER['REMOTE_ADDR'];
+}
+
+// ここから先は失敗しても必ずリダイレクトする
+
+// チラシ経由（flyerパラメータあり）のアクセスのときだけ
+// DB保存とDiscord通知を行う
+if ($flyerParam !== '') {
+
+    // DB保存（失敗しても握りつぶす）
+    try {
+        $dsn      = 'mysql:host=mysql328.phy.lolipop.lan;dbname=LAA1617657-sorobanqr;charset=utf8mb4';
+        $user     = 'LAA1617657';
+        $password = '********';
+
+        $pdo = new PDO($dsn, $user, $password, [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ]);
+
+        $sql = 'INSERT INTO qr_scan_logs
+                  (scan_time, flyer_name, destination, ip_address, is_first_visit)
+                VALUES
+                  (NOW(), :flyer_name, :destination, :ip_address, :is_first_visit)';
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':flyer_name'     => $flyerParam,
+            ':destination'    => $destParam,
+            ':ip_address'     => $ipAddress,
+            ':is_first_visit' => $isFirstVisit,
+        ]);
+    } catch (Throwable $e) {
+        // 何もしない（エラーは無視）
+    }
+
+    // Discord通知（失敗しても握りつぶす）
+    try {
+        $visitLabel = $isFirstVisit ? '初回' : 'リピート';
+
+        $message = sprintf(
+            '🔔 QRコードが読み込まれました！ [チラシ: %s] [遷移先: %s] [初回/リピート判定: %s]',
+            $flyerParam !== '' ? $flyerParam : '-',
+            $destParam  !== '' ? $destParam  : '-',
+            $visitLabel
+        );
+
+        $webhookUrl = 'https://discord.com/api/webhooks/********';
+
+        $payload = json_encode(
+            ['content' => $message],
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
+
+        $ch = curl_init($webhookUrl);
+        if ($ch !== false) {
+            curl_setopt_array($ch, [
+                CURLOPT_POST           => true,
+                CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+                CURLOPT_POSTFIELDS     => $payload,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT        => 2, // 通信遅延対策で短め
+                CURLOPT_CONNECTTIMEOUT => 1,
+            ]);
+
+            curl_exec($ch); // 結果はチェックせず無視
+            curl_close($ch);
+        }
+    } catch (Throwable $e) {
+        // 何もしない（エラーは無視）
+    }
+}
+
+// 最終的に必ずリダイレクト
+if (function_exists('ob_get_level') && ob_get_level() > 0) {
+    @ob_end_clean();
+}
+header('Location: ' . $redirectUrl, true, 302);
+exit;
