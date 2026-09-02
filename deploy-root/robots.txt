@@ -3,5 +3,6 @@
 User-agent: *
 Allow: /
 
+Sitemap: https://osaka-soroban.com/sitemap.xml
 Sitemap: https://osaka-soroban.com/abeno/sitemap.xml
 Sitemap: https://osaka-soroban.com/tsurumi/sitemap.xml
