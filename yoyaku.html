@@ -91,7 +91,7 @@
     .chips input:checked + label small { color: #fff; }
     .chips input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
     .yy .field { margin-bottom: 16px; }
-    .yy input[type=text], .yy input[type=tel], .yy select, .yy textarea {
+    .yy input[type=text], .yy input[type=tel], .yy input[type=email], .yy select, .yy textarea {
       width: 100%;
       border: 1.5px solid var(--line);
       border-radius: 12px;
@@ -164,14 +164,15 @@
     <div class="intro">
       <div class="tag">無料体験授業のお申し込み</div>
       <h1>日にちと時間を選ぶだけ。<br>1分で終わります。</h1>
-      <p class="lead">会員登録やメールアドレスは不要です。</p>
+      <p class="lead">会員登録は不要です。保護者の方とご一緒にお越しください。</p>
 
       <div class="yy-menu">
         <b>無料体験授業（30〜40分）</b>
         <ul>
+          <li>お子さま：実際の教材を使って、そろばんを体験します</li>
+          <li>保護者の方：教室のこと、授業の進め方、通い方や月謝をご案内し、ご質問にお答えします</li>
           <li>対象：年中〜中学生</li>
           <li>場所：阿倍野小学校すぐそば・昭和町林ビル2階</li>
-          <li>講師がマンツーマンで、そろばんの持ち方からお伝えします</li>
         </ul>
       </div>
     </div>
@@ -212,6 +213,10 @@
           <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" maxlength="15" placeholder="09012345678" required />
         </div>
         <div class="field">
+          <label class="ttl" for="email">メールアドレス<span class="opt">受付の確認メールをお送りします</span></label>
+          <input type="email" id="email" name="email" autocomplete="email" inputmode="email" maxlength="100" required />
+        </div>
+        <div class="field">
           <label class="ttl" for="memo">ひとこと<span class="opt">任意（きょうだいで参加・ご質問など）</span></label>
           <textarea id="memo" name="memo" maxlength="300"></textarea>
         </div>
@@ -224,7 +229,7 @@
       <div class="safe">
         <ul>
           <li>持ち物は不要です。手ぶらでお越しください</li>
-          <li>保護者の方の付き添い・見学も歓迎です</li>
+          <li>保護者の方もご一緒にお越しください。教室のご案内と、ご質問をお受けする時間があります</li>
           <li>その場でのご返事は不要です。しつこい勧誘はいたしません</li>
         </ul>
       </div>
@@ -243,7 +248,7 @@
     <div class="yy-done" id="yyDone" tabindex="-1">
       <div class="tag">お申し込みを受け付けました</div>
       <p class="when" id="yyWhen"></p>
-      <p class="sub">にお待ちしています。<br>当日はそのまま教室へお越しください。<br>ご都合が合わない場合のみ、教室からお電話します。</p>
+      <p class="sub">にお待ちしています。<br>当日は保護者の方とご一緒に、そのまま教室へお越しください。<br><span id="yyMail" hidden>受付の確認メールをお送りしました。<br></span>ご都合が合わない場合のみ、教室からお電話します。</p>
       <a class="btn primary" href="https://www.google.com/maps/search/?api=1&query=34.633156,135.513153" target="_blank" rel="noopener">教室の場所を地図で見る</a>
       <div class="alt">
         変更・キャンセルや当日のご連絡は、LINEかお電話でお願いします。<br>
@@ -355,6 +360,7 @@
           child: f.child.value.trim(),
           grade: f.grade.value,
           phone: f.phone.value.replace(/[^0-9]/g, ""),
+          email: f.email.value.trim(),
           memo: f.memo.value.trim(),
           website: f.website.value,
           elapsed: Math.round((Date.now() - startedAt) / 1000),
@@ -366,6 +372,8 @@
         if (!data.child) return fail("お子さまのお名前を入力してください。");
         if (!data.grade) return fail("学年を選んでください。");
         if (!/^0\d{9,10}$/.test(data.phone)) return fail("電話番号を市外局番から入力してください。（例：09012345678）");
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return fail("メールアドレスをご確認ください。");
 
         btn.disabled = true;
         btn.textContent = "送信しています…";
@@ -381,6 +389,7 @@
             var d = new Date(+p[0], +p[1] - 1, +p[2]);
             document.getElementById("yyWhen").textContent =
               (d.getMonth() + 1) + "月" + d.getDate() + "日（" + DOW[d.getDay()] + "）" + data.time;
+            document.getElementById("yyMail").hidden = !res.body.mail;
             root.className = "yy done";
             document.getElementById("yyDone").focus({ preventScroll: true });
             window.scrollTo(0, 0);
