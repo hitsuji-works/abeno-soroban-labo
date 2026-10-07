@@ -90,6 +90,7 @@
     .chips input:checked + label { background: var(--accent); color: #fff; box-shadow: 2px 2px 0 var(--line); }
     .chips input:checked + label small { color: #fff; }
     .chips input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .chips input:disabled + label { opacity: .4; cursor: not-allowed; box-shadow: none; text-decoration: line-through; }
     .yy .field { margin-bottom: 16px; }
     .yy input[type=text], .yy input[type=tel], .yy input[type=email], .yy select, .yy textarea {
       width: 100%;
@@ -162,8 +163,7 @@
 
   <main class="yy" id="yy">
     <div class="intro">
-      <div class="tag">無料体験授業のお申し込み</div>
-      <h1>日にちと時間を選ぶだけ。<br>1分で終わります。</h1>
+      <h1>無料体験授業のお申し込み</h1>
       <p class="lead">会員登録は不要です。保護者の方とご一緒にお越しください。</p>
 
       <div class="yy-menu">
@@ -288,6 +288,11 @@
       var SLOTS = ["14:00", "19:00"];
       var LESSON_DOW = [2, 3, 5]; // 火・水・金
       var DAYS_AHEAD = 14;        // 明日から2週間ぶんを表示
+      // 予約を受けない枠（"YYYY-MM-DD": ["時間", ...]）。全部の時間が入った日は日付ごと出さない
+      // 変えるときは functions/abeno/api/trial.js の FULL も同じにする
+      var FULL = {
+        "2026-10-09": ["19:00"]
+      };
       var DOW = ["日", "月", "火", "水", "木", "金", "土"];
       var startedAt = Date.now();
 
@@ -335,12 +340,22 @@
           if (LESSON_DOW.indexOf(d.getDay()) < 0) continue;
           var iso = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
           if (closed[iso]) continue;
+          if (FULL[iso] && SLOTS.every(function (t) { return FULL[iso].indexOf(t) >= 0; })) continue;
           chip(dateBox, "date", iso, (d.getMonth() + 1) + "/" + d.getDate() + "<small>" + DOW[d.getDay()] + "曜日</small>");
         }
       }
 
       SLOTS.forEach(function (t) { chip(timeBox, "time", t, t + "〜"); });
       loadClosed().then(renderDates);
+
+      // 日にちを選んだら、その日の受けない時間を選べなくする
+      dateBox.addEventListener("change", function (e) {
+        var full = FULL[e.target.value] || [];
+        Array.prototype.forEach.call(timeBox.querySelectorAll("input"), function (input) {
+          input.disabled = full.indexOf(input.value) >= 0;
+          if (input.disabled) input.checked = false;
+        });
+      });
 
       function fail(msg) {
         errBox.textContent = msg;
