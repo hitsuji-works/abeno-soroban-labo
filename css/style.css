@@ -142,6 +142,30 @@ a { color: inherit; }
 .btn .icon { font-size: 18px; line-height: 1; }
 
 /* ============================================================
+   授業日へのショートカット（スマホのみ・在校生の保護者向け）
+   ============================================================ */
+.schedule-jump {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 12px 14px 0;
+  padding: 11px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--wash);
+  font-family: var(--hand);
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--ink);
+}
+.schedule-jump small { font-size: 12px; font-weight: 500; white-space: nowrap; }
+#schedule { scroll-margin-top: 60px; }
+@media (min-width: 900px) {
+  .schedule-jump { display: none; }
+}
+
+/* ============================================================
    Hero
    ============================================================ */
 .hero {
@@ -159,20 +183,13 @@ a { color: inherit; }
   width: 100%;
   height: auto;
   display: block;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 3 / 2;
   object-fit: cover;
   object-position: 88% center;
 }
+/* スマホは見出し→写真の順に縦に並べる（写真に重ねると裏に隠れ、写真も縦長で画面を占領するため） */
 .hero-card {
-  position: absolute;
-  left: 16px; right: 16px; bottom: 16px;
-  background: color-mix(in oklab, var(--paper) 94%, transparent);
-  border: 1.5px solid var(--line);
-  border-radius: 12px;
-  padding: 14px 16px;
-  box-shadow: 3px 3px 0 var(--line);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  padding: 4px 2px 14px;
 }
 .hero-card .tag {
   font-family: var(--hand);
